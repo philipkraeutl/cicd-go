@@ -42,6 +42,9 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
 	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
+	a.Router.HandleFunc("/prices/sum", a.getPriceSum).Methods("GET")
+	a.Router.HandleFunc("/products/count", a.getProductCount).Methods("GET")
+	a.Router.HandleFunc("/products/bySearch", a.getProductsBySearch).Methods("GET")
 }
 
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
@@ -155,4 +158,42 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func (a *App) getPriceSum(w http.ResponseWriter, r *http.Request) {
+
+	price, err := getProductPriceSum(a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, price)
+}
+
+func (a *App) getProductCount(w http.ResponseWriter, r *http.Request) {
+
+	count, err := getProductCount(a.DB)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, count)
+}
+
+func (a *App) getProductsBySearch(w http.ResponseWriter, r *http.Request) {
+	text := r.FormValue("text")
+
+	if text == "" {
+		respondWithError(w, http.StatusBadRequest, "Invalid search text")
+	}
+
+	products, err := getProductsBySearch(a.DB, text)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, products)
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"strconv"
 	"testing"
@@ -183,4 +184,35 @@ func TestDeleteProduct(t *testing.T) {
 	req, _ = http.NewRequest("GET", "/product/1", nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)
+}
+
+func TestGetProductPriceSum(t *testing.T) {
+	clearTable()
+	addProducts(2)
+
+	req, _ := http.NewRequest("GET", "/prices/sum", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+func TestGetProductCount(t *testing.T) {
+	clearTable()
+	addProducts(5)
+
+	req, _ := http.NewRequest("GET", "/products/count", nil)
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
+}
+
+func TestGetProductsBySearch(t *testing.T) {
+	clearTable()
+	addProducts(3)
+
+	req, _ := http.NewRequest("GET", "/products/bySearch", nil)
+	req.Form = url.Values{}
+	req.Form.Set("text", "Product")
+	response := executeRequest(req)
+
+	checkResponseCode(t, http.StatusOK, response.Code)
 }
