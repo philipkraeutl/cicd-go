@@ -1,0 +1,25 @@
+name: Go Build Excercise
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env: 
+      APP_DB_USERNAME: postgres
+      APP_DB_PASSWORD: postgres
+      APP_DB_NAME: GoDb
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with: 
+          go-version: 1.20.2
+      - name: Install dependencies
+        run: go get -d ./...  
+      - name: Start postgres container
+        run: docker run -p 5432:5432 --name postgis -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=GoDb -d postgis/postgis
+      - name: Build
+        run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
