@@ -3,6 +3,7 @@ package main
 import "os"
 
 func main() {
+	// Test the pipeline
 	a := App{}
 	a.Initialize(
 		os.Getenv("APP_DB_USERNAME"),
