@@ -6,6 +6,9 @@ jobs:
   build:
     
     runs-on: ubuntu-latest
+    env:
+    GOPATH: ${{ github.workspace }}
+    GOBIN: ${{ github.workspace }}/bin
     steps:
       - uses: actions/checkout@v3
       - name: Set up Go
@@ -17,4 +20,4 @@ jobs:
       - name: Build
         run: go build -v ./...
       - name: Test
-        run: go tes
+        run: go test
