@@ -183,6 +183,7 @@ func TestDeleteProduct(t *testing.T) {
 
 	req, _ = http.NewRequest("GET", "/product/1", nil)
 	response = executeRequest(req)
+
 	checkResponseCode(t, http.StatusNotFound, response.Code)
 }
 
